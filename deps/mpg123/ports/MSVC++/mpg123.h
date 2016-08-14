@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-typedef long ssize_t;
-
 // Needed for Visual Studio versions before VS 2010.
 #if (_MSC_VER < 1600)
 typedef __int32 int32_t;
@@ -36,8 +34,8 @@ extern "C" {
 
 	// Wrapper around mpg123_open that supports path names with unicode
 	// characters
-	EXPORT int mpg123_topen(mpg123_handle *fr, const _TCHAR *path);
-	EXPORT int mpg123_tclose(mpg123_handle *fr);
+	MPG123_EXPORT int mpg123_topen(mpg123_handle *fr, const _TCHAR *path);
+	MPG123_EXPORT int mpg123_tclose(mpg123_handle *fr);
 
 #ifdef __cplusplus
 }

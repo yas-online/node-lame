@@ -10,6 +10,9 @@
 	I begin with the outsourcing of IPv4 stuff, then make the stuff generic.
 */
 
+/* Newer glibc is strict about this: getaddrinfo() stuff needs POSIX2K. */
+#define _POSIX_C_SOURCE 200112L
+
 #include "mpg123app.h"
 
 #ifdef NETWORK
@@ -22,7 +25,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
-#include <fcntl.h>
 #endif
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
@@ -128,8 +130,11 @@ debug4("hostname between %lu and %lu, %lu chars of %s", (unsigned long)pos, (uns
 		return FALSE;
 	}
 
-	/* Now only the path is left. */
-	if(path) ret = mpg123_set_substring(path, url->p, pos, url->fill-1-pos);
+	/* Now only the path is left.
+	   If there is no path at all, assume "/" */
+	if(path) ret = url->p[pos] == 0
+		? mpg123_set_string(path, "/")
+		: mpg123_set_substring(path, url->p, pos, url->fill-1-pos);
 
 	if(!ret) error("Cannot set path string (out of mem?)");
 
