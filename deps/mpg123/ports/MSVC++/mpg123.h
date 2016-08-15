@@ -28,6 +28,11 @@ typedef __int64 intmax_t;
 #define MPG123_NO_CONFIGURE
 #include "mpg123.h.in" /* Yes, .h.in; we include the configure template! */
 
+// There are cases where the precompiler fails to define the macro...
+#ifndef MPG123_EXPORT
+#define MPG123_EXPORT
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

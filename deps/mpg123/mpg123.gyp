@@ -47,9 +47,69 @@
 
   'targets': [
     {
+      'target_name': 'compat',
+      'product_prefix': 'lib',
+      'type': 'static_library',
+      'include_dirs': [
+        'src',
+        'src/compat',
+        'src/libmpg123',
+        # platform and arch-specific headers
+        'config/<(OS)/<(target_arch)',
+      ],
+      'defines': [
+        'PIC',
+        'NOXFERMEM',
+        'HAVE_CONFIG_H',
+      ],
+      'direct_dependent_settings': {
+        'include_dirs': [
+          'src',
+          'src/compat',
+          'src/libmpg123',
+          # platform and arch-specific headers
+          'config/<(OS)/<(target_arch)',
+        ]
+      },
+      'sources': [
+        'src/compat/compat.c',
+        'src/compat/compat_str.c',
+      ],
+    },
+    {
+      'target_name': 'compat_str',
+      'product_prefix': 'lib',
+      'type': 'static_library',
+      'include_dirs': [
+        'src',
+        'src/compat',
+        'src/libmpg123',
+        # platform and arch-specific headers
+        'config/<(OS)/<(target_arch)',
+      ],
+      'defines': [
+        'PIC',
+        'NOXFERMEM',
+        'HAVE_CONFIG_H',
+      ],
+      'direct_dependent_settings': {
+        'include_dirs': [
+          'src',
+          'src/compat',
+          'src/libmpg123',
+          # platform and arch-specific headers
+          'config/<(OS)/<(target_arch)',
+        ]
+      },
+      'sources': [
+        'src/compat/compat_str.c',
+      ],
+    },
+    {
       'target_name': 'mpg123',
       'product_prefix': 'lib',
       'type': 'static_library',
+	  'dependencies': [ 'compat' ],
       'variables': {
         'conditions': [
           # "mpg123_cpu" is the cpu optimization to use
@@ -64,7 +124,6 @@
         ]
       },
       'sources': [
-        'src/libmpg123/compat.c',
         'src/libmpg123/parse.c',
         'src/libmpg123/frame.c',
         'src/libmpg123/format.c',
@@ -76,18 +135,22 @@
         'src/libmpg123/tabinit.c',
         'src/libmpg123/libmpg123.c',
         'src/libmpg123/index.c',
-        'src/libmpg123/stringbuf.c',
+        #'src/libmpg123/lfs_alias.c',
+        #'src/libmpg123/lfs_wrap.c',
         'src/libmpg123/icy.c',
         'src/libmpg123/icy2utf8.c',
-        'src/libmpg123/ntom.c',
-        'src/libmpg123/synth.c',
-        'src/libmpg123/synth_8bit.c',
         'src/libmpg123/layer1.c',
         'src/libmpg123/layer2.c',
         'src/libmpg123/layer3.c',
+        #'src/libmpg123/dither.c',
         'src/libmpg123/feature.c',
+        'src/libmpg123/ntom.c',
+        'src/libmpg123/synth.c',
+        'src/libmpg123/synth_8bit.c',
+        'src/libmpg123/stringbuf.c',
       ],
       'include_dirs': [
+        'src',
         'src/libmpg123',
         # platform and arch-specific headers
         'config/<(OS)/<(target_arch)',
@@ -99,12 +162,14 @@
       ],
       'direct_dependent_settings': {
         'include_dirs': [
+          'src',
           'src/libmpg123',
           # platform and arch-specific headers
           'config/<(OS)/<(target_arch)',
         ]
       },
       'conditions': [
+		['OS=="win"', {'sources': ['ports/MSVC++/msvc.c']}],
         ['mpg123_cpu=="arm_nofpu"', {
           'defines': [
             'OPT_ARM',
@@ -133,6 +198,7 @@
             'REAL_IS_FLOAT',
           ],
           'sources': [
+            'src/libmpg123/dct36_x86_64.S',
             'src/libmpg123/dct64_x86_64.S',
             'src/libmpg123/dct64_x86_64_float.S',
             'src/libmpg123/synth_s32.c',
@@ -149,9 +215,10 @@
     },
 
     {
-      'target_name': 'output',
+      'target_name': 'out123',
       'product_prefix': 'lib',
       'type': 'static_library',
+	  'dependencies': [ 'compat' ],
       'variables': {
         'conditions': [
           # "mpg123_backend" is the audio backend to use
@@ -164,8 +231,7 @@
       },
       'include_dirs': [
         'src',
-        'src/output',
-        'src/libmpg123',
+        'src/libout123',
         # platform and arch-specific headers
         'config/<(OS)/<(target_arch)',
       ],
@@ -179,8 +245,7 @@
       'direct_dependent_settings': {
         'include_dirs': [
           'src',
-          'src/output',
-          'src/libmpg123',
+          'src/libout123',
           # platform and arch-specific headers
           'config/<(OS)/<(target_arch)',
         ]
@@ -220,21 +285,12 @@
           }
         }],
       ],
-      'sources': [ 'src/output/<(mpg123_backend).c' ],
-    },
-
-    {
-      'target_name': 'test',
-      'type': 'executable',
-      'dependencies': [ 'mpg123' ],
-      'sources': [ 'test.c' ]
-    },
-
-    {
-      'target_name': 'output_test',
-      'type': 'executable',
-      'dependencies': [ 'output' ],
-      'sources': [ 'test_output.c' ]
+      'sources': [
+        'src/libout123/libout123.c',
+        'src/libout123/stringlists.c',
+        'src/libout123/wav.c',
+        'src/libout123/modules/<(mpg123_backend).c'
+      ],
     }
   ]
 }

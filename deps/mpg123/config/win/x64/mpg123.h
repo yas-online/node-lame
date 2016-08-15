@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-typedef intptr_t ssize_t;
-
 // Needed for Visual Studio versions before VS 2010.
 #if (_MSC_VER < 1600)
 typedef __int32 int32_t;
@@ -30,14 +28,19 @@ typedef __int64 intmax_t;
 #define MPG123_NO_CONFIGURE
 #include "mpg123.h.in" /* Yes, .h.in; we include the configure template! */
 
+// There are cases where the precompiler fails to define the macro...
+#ifndef MPG123_EXPORT
+#define MPG123_EXPORT
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 	// Wrapper around mpg123_open that supports path names with unicode
 	// characters
-	EXPORT int mpg123_topen(mpg123_handle *fr, const _TCHAR *path);
-	EXPORT int mpg123_tclose(mpg123_handle *fr);
+	MPG123_EXPORT int mpg123_topen(mpg123_handle *fr, const _TCHAR *path);
+	MPG123_EXPORT int mpg123_tclose(mpg123_handle *fr);
 
 #ifdef __cplusplus
 }

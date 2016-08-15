@@ -26,23 +26,15 @@
  * with the DLL. When consuming the DLL ensure to define LINK_MPG123_DLL which
  * imports the functions from the DLL. 
  */
-#ifdef BUILD_MPG123_DLL
+#if defined(BUILD_MPG123_DLL)
 /* The dll exports. */
 #define MPG123_EXPORT __declspec(dllexport)
-#else
-#ifdef LINK_MPG123_DLL
+#elif defined(LINK_MPG123_DLL)
 /* The exe imports. */
 #define MPG123_EXPORT __declspec(dllimport)
 #else
 /* Nothing on normal/UNIX builds */
 #define MPG123_EXPORT
-#endif
-#endif
-
-/* This is for Visual Studio, so this header works as distributed in the binary downloads */
-#if defined(_MSC_VER)
-#include <stddef.h>
-typedef ptrdiff_t ssize_t;
 #endif
 
 #ifndef MPG123_NO_CONFIGURE /* Enable use of this file without configure. */
